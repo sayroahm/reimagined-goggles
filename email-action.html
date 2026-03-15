@@ -3,380 +3,281 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Felix Enterprise — Email Action Handler</title>
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&family=Exo+2:wght@200;300;400;600&display=swap" rel="stylesheet"/>
+  <title>Felix Enterprise — Email Verification</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&family=Source+Serif+4:wght@400;600&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg-base:      #080c10;
-      --bg-panel:     #0d1117;
-      --bg-card:      #111820;
-      --border:       #1e2d3d;
-      --border-glow:  #1a4a6e;
-      --accent:       #0f7fd4;
-      --accent-soft:  rgba(15,127,212,0.10);
-      --accent-glow:  rgba(15,127,212,0.3);
-      --text-primary: #ccd6e0;
-      --text-dim:     #5a7a94;
-      --text-muted:   #2e4558;
-      --success:      #2ecc71;
-      --success-soft: rgba(46,204,113,0.12);
-      --danger:       #e05252;
-      --danger-soft:  rgba(224,82,52,0.12);
-      --warning:      #e0a832;
-      --warning-soft: rgba(224,168,50,0.12);
-      --mono:         'Share Tech Mono', monospace;
-      --sans:         'Rajdhani', sans-serif;
-      --body:         'Exo 2', sans-serif;
+      --bg:          #f4f6f8;
+      --surface:     #ffffff;
+      --border:      #d0d7de;
+      --blue:        #005EB8;
+      --blue-hover:  #004a93;
+      --blue-light:  #e8f0fb;
+      --blue-mid:    #ccddf5;
+      --text:        #1a1d23;
+      --text-sub:    #4a5568;
+      --text-dim:    #718096;
+      --text-muted:  #a0aec0;
+      --success:     #276749;
+      --success-bg:  #e6f4ee;
+      --success-border: #52b788;
+      --danger:      #c53030;
+      --danger-bg:   #fff5f5;
+      --warning:     #744210;
+      --warning-bg:  #fffbeb;
+      --warning-border: #f6c762;
+      --font:        'Source Sans 3', sans-serif;
+      --serif:       'Source Serif 4', serif;
+      --radius:      3px;
     }
-
-    html, body { height: 100%; }
 
     body {
-      background: var(--bg-base);
-      color: var(--text-primary);
-      font-family: var(--body);
-      min-height: 100vh;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 24px;
+      background: var(--bg); font-family: var(--font); color: var(--text);
+      min-height: 100vh; display: flex; flex-direction: column;
     }
 
-    body::before {
-      content: '';
-      position: fixed; inset: 0; z-index: 0;
-      background-image:
-        linear-gradient(rgba(15,127,212,0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(15,127,212,0.04) 1px, transparent 1px);
-      background-size: 40px 40px;
-      pointer-events: none;
+    .header {
+      background: var(--blue); padding: 0 32px; height: 56px;
+      display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
     }
 
-    body::after {
-      content: '';
-      position: fixed; inset: 0; z-index: 0;
-      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(15,127,212,0.06) 0%, transparent 70%);
-      pointer-events: none;
-    }
+    .header-brand { display: flex; align-items: center; gap: 12px; }
 
-    .topbar {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      height: 48px;
-      background: rgba(8,12,16,0.95);
-      border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 32px;
-      backdrop-filter: blur(8px);
-    }
-
-    .topbar-logo {
-      font-family: var(--mono);
-      font-size: 13px;
-      color: var(--accent);
-      letter-spacing: 0.1em;
-    }
-
-    .topbar-sub {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--text-muted);
-      letter-spacing: 0.15em;
-    }
-
-    /* ── PANEL ── */
-    .panel {
-      position: relative; z-index: 1;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      width: 100%; max-width: 460px;
-      padding: 52px 40px 44px;
-      margin-top: 48px;
-      text-align: center;
-      animation: slideIn 0.5s ease both;
-    }
-
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .panel::before {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0;
-      height: 2px;
-    }
-
-    .panel.loading::before { background: linear-gradient(90deg, var(--accent), transparent); }
-    .panel.success::before { background: linear-gradient(90deg, var(--success), transparent); }
-    .panel.error::before   { background: linear-gradient(90deg, var(--danger), transparent); }
-    .panel.reset::before   { background: linear-gradient(90deg, var(--warning), transparent); }
-
-    /* ── STATES ── */
-    .state { display: none; }
-    .state.active { display: block; }
-
-    /* ── ICON ── */
-    .icon-ring {
-      width: 80px; height: 80px;
-      border-radius: 50%;
+    .header-logo {
+      width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 4px;
       display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 28px;
-      font-size: 32px;
-      position: relative;
+      font-size: 16px; color: #fff; font-weight: 700; font-family: var(--serif);
     }
 
-    .icon-ring.loading {
-      border: 2px solid var(--border-glow);
-      background: var(--accent-soft);
+    .header-name { color: #fff; font-size: 17px; font-weight: 600; }
+    .header-sub  { color: rgba(255,255,255,0.65); font-size: 12px; }
+    .header-info { color: rgba(255,255,255,0.65); font-size: 13px; }
+
+    main {
+      flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 24px;
     }
 
-    .icon-ring.success {
-      border: 2px solid var(--success);
-      background: var(--success-soft);
-      animation: ring-pulse-green 3s infinite;
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); width: 100%; max-width: 440px; overflow: hidden;
     }
 
-    .icon-ring.error {
-      border: 2px solid var(--danger);
-      background: var(--danger-soft);
+    .card-header {
+      background: var(--blue-light); border-bottom: 1px solid var(--blue-mid);
+      padding: 20px 28px 18px;
     }
 
-    .icon-ring.reset {
-      border: 2px solid var(--warning);
-      background: var(--warning-soft);
+    .card-header.success-header { background: var(--success-bg); border-color: var(--success-border); }
+    .card-header.error-header   { background: var(--danger-bg);  border-color: #feb2b2; }
+    .card-header.reset-header   { background: var(--warning-bg); border-color: var(--warning-border); }
+
+    .card-eyebrow {
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.08em; margin-bottom: 4px;
     }
 
-    @keyframes ring-pulse-green {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(46,204,113,0.4); }
-      50%       { box-shadow: 0 0 0 12px rgba(46,204,113,0); }
+    .card-eyebrow.blue    { color: var(--blue); }
+    .card-eyebrow.success { color: var(--success); }
+    .card-eyebrow.danger  { color: var(--danger); }
+    .card-eyebrow.warning { color: var(--warning); }
+
+    .card-title {
+      font-family: var(--serif); font-size: 22px; font-weight: 600; color: var(--text);
     }
 
-    /* ── SPINNER ── */
-    .spin-ring {
-      width: 36px; height: 36px;
-      border: 3px solid var(--border-glow);
-      border-top-color: var(--accent);
+    .card-body { padding: 24px 28px 28px; }
+
+    /* ── LOADING ── */
+    .loading-wrap {
+      text-align: center; padding: 12px 0 16px;
+    }
+
+    .loader {
+      width: 40px; height: 40px;
+      border: 3px solid var(--blue-mid);
+      border-top-color: var(--blue);
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
-      margin: 0 auto;
+      margin: 0 auto 16px;
     }
 
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── TEXT ── */
-    .state-label {
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      margin-bottom: 10px;
+    .loading-text { font-size: 14px; color: var(--text-sub); }
+
+    /* ── STATUS ICON ── */
+    .status-icon {
+      width: 56px; height: 56px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; margin: 0 0 16px;
     }
 
-    .state-label.loading { color: var(--accent); }
-    .state-label.success { color: var(--success); }
-    .state-label.error   { color: var(--danger); }
-    .state-label.reset   { color: var(--warning); }
-
-    .state-title {
-      font-family: var(--sans);
-      font-size: 26px;
-      font-weight: 700;
-      color: #e8f4ff;
-      margin-bottom: 12px;
-    }
+    .status-icon.success { background: var(--success-bg); }
+    .status-icon.error   { background: var(--danger-bg); }
+    .status-icon.warning { background: var(--warning-bg); }
 
     .state-desc {
-      font-size: 13px;
-      color: var(--text-dim);
-      font-weight: 300;
-      line-height: 1.8;
-      margin-bottom: 28px;
+      font-size: 14px; color: var(--text-sub); line-height: 1.6; margin-bottom: 20px;
     }
 
-    /* ── STATUS LOG ── */
-    .log {
-      background: var(--bg-panel);
-      border: 1px solid var(--border);
-      padding: 14px 16px;
-      text-align: left;
-      margin-bottom: 28px;
-    }
-
-    .log-line {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--text-dim);
-      letter-spacing: 0.08em;
-      line-height: 1.9;
-    }
-
-    .log-line .ts { color: var(--text-muted); }
-    .log-line .ok { color: var(--success); }
-    .log-line .err { color: var(--danger); }
-    .log-line .info { color: var(--accent); }
-
-    /* ── BUTTONS ── */
-    .btn {
-      display: block;
-      width: 100%;
-      padding: 13px;
-      font-family: var(--sans);
-      font-size: 14px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      text-decoration: none;
-      cursor: pointer;
-      transition: background 0.2s, box-shadow 0.2s, border-color 0.2s, color 0.2s;
-      border: none;
-      margin-bottom: 10px;
-    }
-
-    .btn-primary  { background: var(--accent); color: #fff; }
-    .btn-primary:hover { background: #1a90e8; box-shadow: 0 0 20px var(--accent-glow); }
-
-    .btn-success  { background: var(--success); color: #0a1a10; }
-    .btn-success:hover { filter: brightness(1.1); }
-
-    .btn-outline  {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-dim);
-    }
-    .btn-outline:hover { border-color: var(--border-glow); color: var(--text-primary); }
-
-    /* ── PASSWORD RESET FORM (shown for reset mode) ── */
-    .reset-form { display: none; text-align: left; }
-    .reset-form.active { display: block; }
-
-    .field { margin-bottom: 18px; }
+    /* ── FIELD ── */
+    .field { margin-bottom: 14px; }
 
     .field-label {
-      display: block;
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--text-dim);
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      margin-bottom: 8px;
+      display: block; font-size: 13px; font-weight: 600;
+      color: var(--text-sub); margin-bottom: 5px;
     }
 
     .field-input {
-      width: 100%;
-      background: var(--bg-panel);
-      border: 1px solid var(--border);
-      color: var(--text-primary);
-      font-family: var(--mono);
-      font-size: 13px;
-      padding: 11px 14px;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%; background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); color: var(--text);
+      font-family: var(--font); font-size: 14px; padding: 9px 12px;
+      outline: none; transition: border-color 0.15s, box-shadow 0.15s;
     }
 
     .field-input::placeholder { color: var(--text-muted); }
 
     .field-input:focus {
-      border-color: var(--border-glow);
-      box-shadow: 0 0 0 3px var(--accent-soft);
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px var(--blue-mid);
     }
+
+    /* ── BUTTONS ── */
+    .btn {
+      width: 100%; padding: 10px 16px; border: none; border-radius: var(--radius);
+      font-family: var(--font); font-size: 14px; font-weight: 600; cursor: pointer;
+      transition: background 0.15s, box-shadow 0.15s, opacity 0.15s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      text-decoration: none; margin-bottom: 8px;
+    }
+
+    .btn:last-child { margin-bottom: 0; }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    .btn-primary { background: var(--blue); color: #fff; }
+    .btn-primary:hover:not(:disabled) { background: var(--blue-hover); }
+
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-success:hover:not(:disabled) { background: #1d5235; }
+
+    .btn-outline {
+      background: var(--surface); color: var(--text-sub); border: 1px solid var(--border);
+    }
+
+    .btn-outline:hover:not(:disabled) { background: var(--bg); }
+
+    .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff;
+      border-radius: 50%; animation: spin2 0.7s linear infinite; flex-shrink: 0;
+    }
+
+    @keyframes spin2 { to { transform: rotate(360deg); } }
 
     .countdown {
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 12px;
+      text-align: center; font-size: 12px; color: var(--text-muted);
+      padding: 8px 0 0; display: none;
     }
 
-    .countdown span { color: var(--success); }
+    .countdown.active { display: block; }
+
+    /* ── STATES ── */
+    .state { display: none; }
+    .state.active { display: block; }
+
+    footer {
+      background: var(--surface); border-top: 1px solid var(--border);
+      padding: 14px 32px; display: flex; align-items: center; justify-content: space-between;
+    }
+
+    footer div { font-size: 12px; color: var(--text-muted); }
   </style>
 </head>
 <body>
 
-  <div class="topbar">
-    <div class="topbar-logo">FELIX//SYS</div>
-    <div class="topbar-sub">EMAIL ACTION HANDLER</div>
+  <div class="header">
+    <div class="header-brand">
+      <div class="header-logo">F</div>
+      <div>
+        <div class="header-name">Felix Enterprise</div>
+        <div class="header-sub">Case Management System</div>
+      </div>
+    </div>
+    <div class="header-info">Email Action Handler</div>
   </div>
 
-  <div class="panel" id="mainPanel">
-
-    <!-- STATE: LOADING -->
-    <div class="state active" id="stateLoading">
-      <div class="icon-ring loading">
-        <div class="spin-ring"></div>
+  <main>
+    <div class="card" id="mainCard">
+      <div class="card-header" id="cardHeader">
+        <div class="card-eyebrow blue" id="cardEyebrow">Processing</div>
+        <div class="card-title" id="cardTitle">Please Wait</div>
       </div>
-      <div class="state-label loading">// PROCESSING</div>
-      <div class="state-title">Processing Request</div>
-      <div class="state-desc">Validating your action code with Firebase. Please wait...</div>
-      <div class="log">
-        <div class="log-line"><span class="ts">[SYS] </span><span class="info">Parsing URL parameters...</span></div>
-        <div class="log-line" id="logMode"><span class="ts">[SYS] </span>Detecting action mode...</div>
-        <div class="log-line" id="logCode"><span class="ts">[SYS] </span>Validating oobCode...</div>
-      </div>
-    </div>
 
-    <!-- STATE: SUCCESS (verify email) -->
-    <div class="state" id="stateVerifySuccess">
-      <div class="icon-ring success">✓</div>
-      <div class="state-label success">// VERIFIED</div>
-      <div class="state-title">Email Verified</div>
-      <div class="state-desc">
-        Your email address has been successfully verified. Your Felix Enterprise account is now fully active.
-      </div>
-      <div class="log">
-        <div class="log-line"><span class="ts">[AUTH] </span><span class="ok">✓ Email verified successfully.</span></div>
-        <div class="log-line"><span class="ts">[AUTH] </span><span class="ok">✓ Account status: ACTIVE</span></div>
-        <div class="log-line"><span class="ts">[SYS] </span><span class="info">Redirecting in <span id="countdown">5</span>s...</span></div>
-      </div>
-      <a href="login.html" class="btn btn-success">PROCEED TO SIGN IN</a>
-      <a href="index.html" class="btn btn-outline">RETURN TO PORTAL</a>
-    </div>
+      <div class="card-body">
 
-    <!-- STATE: SUCCESS (reset password) -->
-    <div class="state" id="stateResetSuccess">
-      <div class="icon-ring success">✓</div>
-      <div class="state-label success">// RESET COMPLETE</div>
-      <div class="state-title">Password Updated</div>
-      <div class="state-desc">
-        Your password has been successfully reset. You can now sign in with your new credentials.
-      </div>
-      <a href="login.html" class="btn btn-success">SIGN IN NOW</a>
-    </div>
-
-    <!-- STATE: ERROR -->
-    <div class="state" id="stateError">
-      <div class="icon-ring error">✕</div>
-      <div class="state-label error">// ACTION FAILED</div>
-      <div class="state-title">Action Invalid</div>
-      <div class="state-desc" id="errorDesc">The link you used is invalid or has expired. Verification links are valid for 24 hours.</div>
-      <div class="log">
-        <div class="log-line"><span class="ts">[AUTH] </span><span class="err" id="errorCode">ERR_INVALID_CODE</span></div>
-      </div>
-      <a href="register.html" class="btn btn-primary">RE-REGISTER</a>
-      <a href="login.html" class="btn btn-outline">BACK TO SIGN IN</a>
-    </div>
-
-    <!-- STATE: PASSWORD RESET FORM -->
-    <div class="state" id="stateResetForm">
-      <div class="icon-ring reset">🔑</div>
-      <div class="state-label reset">// RESET PASSWORD</div>
-      <div class="state-title">Set New Password</div>
-      <div class="state-desc">Choose a new secure password for your Felix account.</div>
-
-      <div class="reset-form active">
-        <div class="field">
-          <label class="field-label" for="newPassword">New Password</label>
-          <input class="field-input" type="password" id="newPassword" placeholder="Min. 8 characters"/>
+        <!-- STATE: LOADING -->
+        <div class="state active" id="stateLoading">
+          <div class="loading-wrap">
+            <div class="loader"></div>
+            <div class="loading-text">Validating your action link&hellip;</div>
+          </div>
         </div>
-        <div class="field">
-          <label class="field-label" for="confirmNewPassword">Confirm Password</label>
-          <input class="field-input" type="password" id="confirmNewPassword" placeholder="Re-enter password"/>
+
+        <!-- STATE: VERIFY SUCCESS -->
+        <div class="state" id="stateVerifySuccess">
+          <div class="status-icon success">✅</div>
+          <div class="state-desc">
+            Your email address has been successfully verified. Your Felix Enterprise account is now fully active and you can sign in.
+          </div>
+          <a href="login.html" class="btn btn-success">Sign In to Felix</a>
+          <a href="index.html" class="btn btn-outline">Return to Portal</a>
+          <div class="countdown" id="countdown"></div>
         </div>
-        <button class="btn btn-primary" onclick="handleReset()" id="resetBtn">SET NEW PASSWORD</button>
+
+        <!-- STATE: RESET FORM -->
+        <div class="state" id="stateResetForm">
+          <div class="state-desc">Enter and confirm your new password below.</div>
+          <div class="field">
+            <label class="field-label" for="newPassword">New Password</label>
+            <input class="field-input" type="password" id="newPassword" placeholder="Minimum 8 characters"/>
+          </div>
+          <div class="field">
+            <label class="field-label" for="confirmNewPassword">Confirm New Password</label>
+            <input class="field-input" type="password" id="confirmNewPassword" placeholder="Re-enter password"/>
+          </div>
+          <div class="state-desc" id="resetError" style="color:var(--danger);display:none;margin-top:-8px;font-size:13px;"></div>
+          <button class="btn btn-primary" id="resetBtn" onclick="handleReset()">Set New Password</button>
+        </div>
+
+        <!-- STATE: RESET SUCCESS -->
+        <div class="state" id="stateResetSuccess">
+          <div class="status-icon success">✅</div>
+          <div class="state-desc">
+            Your password has been updated successfully. You can now sign in with your new credentials.
+          </div>
+          <a href="login.html" class="btn btn-success">Sign In</a>
+        </div>
+
+        <!-- STATE: ERROR -->
+        <div class="state" id="stateError">
+          <div class="status-icon error">⚠️</div>
+          <div class="state-desc" id="errorDesc">
+            This link is invalid or has expired. Verification links are only valid for 24 hours.
+          </div>
+          <a href="register.html" class="btn btn-primary">Register Again</a>
+          <a href="login.html" class="btn btn-outline">Back to Sign In</a>
+        </div>
+
       </div>
     </div>
+  </main>
 
-  </div>
+  <footer>
+    <div>Felix Enterprise &mdash; NBEP</div>
+    <div>All sessions encrypted and logged</div>
+  </footer>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
@@ -398,115 +299,108 @@
       measurementId: "G-JXR6MRSYME"
     };
 
-    const app = initializeApp(firebaseConfig);
+    const app  = initializeApp(firebaseConfig);
     const analytics = getAnalytics(app);
     const auth = getAuth(app);
 
-    /* ── Parse URL Params ── */
-    const params   = new URLSearchParams(window.location.search);
-    const mode     = params.get("mode");
-    const oobCode  = params.get("oobCode");
-    const panel    = document.getElementById("mainPanel");
+    const params  = new URLSearchParams(window.location.search);
+    const mode    = params.get("mode");
+    const oobCode = params.get("oobCode");
+    let resetCode = null;
 
-    let resetOobCode = null;
+    const errMap = {
+      "auth/expired-action-code": "This link has expired. Verification links are valid for 24 hours. Please request a new one.",
+      "auth/invalid-action-code": "This link is invalid or has already been used. Please request a new verification email.",
+      "auth/user-disabled":       "This account has been disabled. Please contact your administrator.",
+      "auth/user-not-found":      "No account is associated with this link.",
+    };
 
-    /* ── State Switcher ── */
     function showState(id) {
-      document.querySelectorAll(".state").forEach(el => el.classList.remove("active"));
+      document.querySelectorAll(".state").forEach(s => s.classList.remove("active"));
       document.getElementById(id).classList.add("active");
     }
 
-    function setError(code, desc) {
-      panel.className = "panel error";
-      document.getElementById("errorCode").textContent = code;
+    function setHeader(eyebrow, eyebrowClass, title, headerClass) {
+      document.getElementById("cardEyebrow").textContent  = eyebrow;
+      document.getElementById("cardEyebrow").className    = `card-eyebrow ${eyebrowClass}`;
+      document.getElementById("cardTitle").textContent    = title;
+      document.getElementById("cardHeader").className     = `card-header ${headerClass}`;
+    }
+
+    function showError(desc) {
+      setHeader("Action Failed", "danger", "Link Invalid or Expired", "error-header");
       document.getElementById("errorDesc").textContent = desc;
       showState("stateError");
     }
 
-    /* ── Update log lines ── */
-    function logUpdate(id, type, text) {
-      const el = document.getElementById(id);
-      if (el) el.innerHTML = `<span class="ts">[SYS] </span><span class="${type}">${text}</span>`;
-    }
-
-    /* ── Main Handler ── */
     async function handleAction() {
-      logUpdate("logMode", "info", `Mode detected: ${mode || "UNKNOWN"}`);
-
-      if (!oobCode) {
-        return setError("ERR_MISSING_CODE", "No action code was found in this URL. The link may be malformed.");
-      }
-
-      logUpdate("logCode", "info", "oobCode present — validating...");
-
-      if (!mode) {
-        return setError("ERR_MISSING_MODE", "No action mode was specified in this URL.");
-      }
+      if (!oobCode) return showError("No action code was found in this URL. The link may be malformed or incomplete.");
+      if (!mode)    return showError("No action mode was specified in this URL.");
 
       try {
         if (mode === "verifyEmail") {
           await applyActionCode(auth, oobCode);
-          panel.className = "panel success";
+          setHeader("Verification Complete", "success", "Email Verified", "success-header");
           showState("stateVerifySuccess");
 
-          /* Auto-redirect countdown */
           let secs = 5;
-          const cdEl = document.getElementById("countdown");
-          const interval = setInterval(() => {
+          const cd = document.getElementById("countdown");
+          cd.textContent = `Redirecting to sign in in ${secs}s...`;
+          cd.classList.add("active");
+          const iv = setInterval(() => {
             secs--;
-            if (cdEl) cdEl.textContent = secs;
-            if (secs <= 0) {
-              clearInterval(interval);
-              window.location.href = "login.html";
-            }
+            cd.textContent = `Redirecting to sign in in ${secs}s...`;
+            if (secs <= 0) { clearInterval(iv); window.location.href = "login.html"; }
           }, 1000);
 
         } else if (mode === "resetPassword") {
           await verifyPasswordResetCode(auth, oobCode);
-          resetOobCode = oobCode;
-          panel.className = "panel reset";
+          resetCode = oobCode;
+          setHeader("Password Reset", "warning", "Set New Password", "reset-header");
           showState("stateResetForm");
 
         } else {
-          setError("ERR_UNKNOWN_MODE", `Unrecognized action mode: "${mode}".`);
+          showError(`Unrecognized action mode: "${mode}".`);
         }
 
       } catch (err) {
-        const errMap = {
-          "auth/expired-action-code":    ["ERR_EXPIRED_CODE",   "This link has expired. Verification links are only valid for 24 hours. Please request a new one."],
-          "auth/invalid-action-code":    ["ERR_INVALID_CODE",   "This link is invalid or has already been used. Please request a new verification email."],
-          "auth/user-disabled":          ["ERR_USER_DISABLED",  "This account has been disabled by an administrator."],
-          "auth/user-not-found":         ["ERR_USER_NOT_FOUND", "No account is associated with this verification link."],
-        };
-        const [code, desc] = errMap[err.code] || ["ERR_UNKNOWN", err.message];
-        setError(code, desc);
+        showError(errMap[err.code] || err.message);
       }
     }
 
-    /* ── Password Reset Submit ── */
     window.handleReset = async function () {
-      const pw   = document.getElementById("newPassword").value;
-      const pw2  = document.getElementById("confirmNewPassword").value;
-      const btn  = document.getElementById("resetBtn");
+      const pw  = document.getElementById("newPassword").value;
+      const pw2 = document.getElementById("confirmNewPassword").value;
+      const errEl = document.getElementById("resetError");
+      const btn = document.getElementById("resetBtn");
 
-      if (pw.length < 8) return alert("Password must be at least 8 characters.");
-      if (pw !== pw2)    return alert("Passwords do not match.");
+      errEl.style.display = "none";
+
+      if (pw.length < 8) {
+        errEl.textContent = "Password must be at least 8 characters.";
+        errEl.style.display = "block"; return;
+      }
+
+      if (pw !== pw2) {
+        errEl.textContent = "Passwords do not match.";
+        errEl.style.display = "block"; return;
+      }
 
       btn.disabled = true;
-      btn.textContent = "UPDATING...";
+      btn.innerHTML = `<div class="spinner"></div> Updating...`;
 
       try {
-        await confirmPasswordReset(auth, resetOobCode, pw);
-        panel.className = "panel success";
+        await confirmPasswordReset(auth, resetCode, pw);
+        setHeader("Password Updated", "success", "Reset Successful", "success-header");
         showState("stateResetSuccess");
       } catch (err) {
+        errEl.textContent = `Error: ${err.message}`;
+        errEl.style.display = "block";
         btn.disabled = false;
-        btn.textContent = "SET NEW PASSWORD";
-        alert(`Error: ${err.message}`);
+        btn.textContent = "Set New Password";
       }
     };
 
-    /* ── Kick it off ── */
     handleAction();
   </script>
 </body>
