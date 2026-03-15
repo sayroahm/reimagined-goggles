@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Felix Enterprise — Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&family=Exo+2:wght@200;300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-base:      #080c10;
+      --bg-panel:     #0d1117;
+      --bg-card:      #111820;
+      --border:       #1e2d3d;
+      --border-glow:  #1a4a6e;
+      --accent:       #0f7fd4;
+      --accent-dim:   #0a5a96;
+      --accent-soft:  rgba(15,127,212,0.12);
+      --accent-glow:  rgba(15,127,212,0.35);
+      --gold:         #c9a84c;
+      --gold-dim:     rgba(201,168,76,0.15);
+      --text-primary: #ccd6e0;
+      --text-dim:     #5a7a94;
+      --text-muted:   #2e4558;
+      --danger:       #c0392b;
+      --success:      #1a7a4a;
+      --mono:         'Share Tech Mono', monospace;
+      --sans:         'Rajdhani', sans-serif;
+      --body:         'Exo 2', sans-serif;
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      background: var(--bg-base);
+      color: var(--text-primary);
+      font-family: var(--body);
+      overflow-x: hidden;
+    }
+
+    /* ── GRID BACKGROUND ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(rgba(15,127,212,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(15,127,212,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(15,127,212,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ── TOP BAR ── */
+    .topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: 48px;
+      background: rgba(8,12,16,0.95);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 32px;
+      backdrop-filter: blur(8px);
+    }
+
+    .topbar-left {
+      display: flex; align-items: center; gap: 12px;
+    }
+
+    .topbar-logo {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+    }
+
+    .topbar-divider {
+      width: 1px; height: 18px;
+      background: var(--border);
+    }
+
+    .topbar-sub {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .topbar-status {
+      display: flex; align-items: center; gap: 6px;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-dim);
+    }
+
+    .status-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #1a7a4a;
+      box-shadow: 0 0 6px #1a7a4a;
+      animation: pulse-dot 2s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* ── MAIN ── */
+    main {
+      position: relative; z-index: 1;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 80px 24px 40px;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      text-align: center;
+      margin-bottom: 60px;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--accent-soft);
+      border: 1px solid var(--border-glow);
+      border-radius: 2px;
+      padding: 4px 14px;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--accent);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+
+    .hero-badge-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse-dot 1.5s infinite;
+    }
+
+    .hero-title {
+      font-family: var(--sans);
+      font-size: clamp(42px, 7vw, 72px);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      color: #e8f4ff;
+      margin-bottom: 8px;
+    }
+
+    .hero-title span {
+      color: var(--accent);
+    }
+
+    .hero-subtitle {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .hero-desc {
+      font-size: 15px;
+      color: var(--text-dim);
+      font-weight: 300;
+      max-width: 480px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* ── PORTAL CARDS ── */
+    .portal-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      width: 100%;
+      max-width: 640px;
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
+
+    .portal-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 32px 28px;
+      display: flex; flex-direction: column; gap: 16px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .portal-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+    }
+
+    .portal-card:hover {
+      border-color: var(--border-glow);
+      box-shadow: 0 0 30px var(--accent-glow), inset 0 0 30px rgba(15,127,212,0.03);
+      transform: translateY(-2px);
+    }
+
+    .portal-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .card-icon {
+      width: 40px; height: 40px;
+      background: var(--accent-soft);
+      border: 1px solid var(--border-glow);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+
+    .card-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--accent);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+    }
+
+    .card-title {
+      font-family: var(--sans);
+      font-size: 22px;
+      font-weight: 600;
+      color: #e8f4ff;
+    }
+
+    .card-desc {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.6;
+      font-weight: 300;
+    }
+
+    .card-arrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      margin-top: auto;
+      display: flex; align-items: center; gap: 6px;
+      transition: gap 0.2s;
+    }
+
+    .portal-card:hover .card-arrow {
+      gap: 12px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative; z-index: 1;
+      text-align: center;
+      padding: 24px;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 0.15em;
+    }
+
+    footer span { color: var(--accent-dim); }
+  </style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo">FELIX//SYS</div>
+      <div class="topbar-divider"></div>
+      <div class="topbar-sub">Enterprise Case Management</div>
+    </div>
+    <div class="topbar-status">
+      <div class="status-dot"></div>
+      SYSTEMS NOMINAL
+    </div>
+  </div>
+
+  <main>
+    <div class="hero">
+      <div class="hero-badge">
+        <div class="hero-badge-dot"></div>
+        Secure Portal Access
+      </div>
+      <h1 class="hero-title">Felix <span>Enterprise</span></h1>
+      <div class="hero-subtitle">Case Management System — v2.0</div>
+      <p class="hero-desc">
+        Authorized personnel only. All access is logged, monitored, and subject to audit.
+      </p>
+    </div>
+
+    <div class="portal-grid">
+      <a class="portal-card" href="login.html">
+        <div class="card-icon">🔐</div>
+        <div class="card-label">Existing User</div>
+        <div class="card-title">Sign In</div>
+        <div class="card-desc">Access your Felix workspace with your credentials.</div>
+        <div class="card-arrow">ENTER PORTAL →</div>
+      </a>
+
+      <a class="portal-card" href="register.html">
+        <div class="card-icon">📋</div>
+        <div class="card-label">New Account</div>
+        <div class="card-title">Register</div>
+        <div class="card-desc">Request access to the Felix Enterprise system.</div>
+        <div class="card-arrow">BEGIN ENROLLMENT →</div>
+      </a>
+    </div>
+  </main>
+
+  <footer>
+    FELIX ENTERPRISE CASE MANAGEMENT &nbsp;|&nbsp; <span>RESTRICTED ACCESS</span> &nbsp;|&nbsp; ALL SESSIONS LOGGED
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCtEi3_E3ZOwjTdw4tSexlPvEB27lZp0UU",
+      authDomain: "felix-582ed.firebaseapp.com",
+      projectId: "felix-582ed",
+      storageBucket: "felix-582ed.firebasestorage.app",
+      messagingSenderId: "434043393116",
+      appId: "1:434043393116:web:5f20713d301320c38b0299",
+      measurementId: "G-JXR6MRSYME"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const auth = getAuth(app);
+
+    // If already signed in and verified, redirect to dashboard
+    onAuthStateChanged(auth, (user) => {
+      if (user && user.emailVerified) {
+        window.location.href = "dashboard.html";
+      }
+    });
+  </script>
+</body>
+</html>
