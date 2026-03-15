@@ -1,1 +1,514 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Felix Enterprise — Email Action Handler</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&family=Exo+2:wght@200;300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-base:      #080c10;
+      --bg-panel:     #0d1117;
+      --bg-card:      #111820;
+      --border:       #1e2d3d;
+      --border-glow:  #1a4a6e;
+      --accent:       #0f7fd4;
+      --accent-soft:  rgba(15,127,212,0.10);
+      --accent-glow:  rgba(15,127,212,0.3);
+      --text-primary: #ccd6e0;
+      --text-dim:     #5a7a94;
+      --text-muted:   #2e4558;
+      --success:      #2ecc71;
+      --success-soft: rgba(46,204,113,0.12);
+      --danger:       #e05252;
+      --danger-soft:  rgba(224,82,52,0.12);
+      --warning:      #e0a832;
+      --warning-soft: rgba(224,168,50,0.12);
+      --mono:         'Share Tech Mono', monospace;
+      --sans:         'Rajdhani', sans-serif;
+      --body:         'Exo 2', sans-serif;
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      background: var(--bg-base);
+      color: var(--text-primary);
+      font-family: var(--body);
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 24px;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(rgba(15,127,212,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(15,127,212,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(15,127,212,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: 48px;
+      background: rgba(8,12,16,0.95);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 32px;
+      backdrop-filter: blur(8px);
+    }
+
+    .topbar-logo {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+    }
+
+    .topbar-sub {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 0.15em;
+    }
+
+    /* ── PANEL ── */
+    .panel {
+      position: relative; z-index: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      width: 100%; max-width: 460px;
+      padding: 52px 40px 44px;
+      margin-top: 48px;
+      text-align: center;
+      animation: slideIn 0.5s ease both;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 2px;
+    }
+
+    .panel.loading::before { background: linear-gradient(90deg, var(--accent), transparent); }
+    .panel.success::before { background: linear-gradient(90deg, var(--success), transparent); }
+    .panel.error::before   { background: linear-gradient(90deg, var(--danger), transparent); }
+    .panel.reset::before   { background: linear-gradient(90deg, var(--warning), transparent); }
+
+    /* ── STATES ── */
+    .state { display: none; }
+    .state.active { display: block; }
+
+    /* ── ICON ── */
+    .icon-ring {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 28px;
+      font-size: 32px;
+      position: relative;
+    }
+
+    .icon-ring.loading {
+      border: 2px solid var(--border-glow);
+      background: var(--accent-soft);
+    }
+
+    .icon-ring.success {
+      border: 2px solid var(--success);
+      background: var(--success-soft);
+      animation: ring-pulse-green 3s infinite;
+    }
+
+    .icon-ring.error {
+      border: 2px solid var(--danger);
+      background: var(--danger-soft);
+    }
+
+    .icon-ring.reset {
+      border: 2px solid var(--warning);
+      background: var(--warning-soft);
+    }
+
+    @keyframes ring-pulse-green {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(46,204,113,0.4); }
+      50%       { box-shadow: 0 0 0 12px rgba(46,204,113,0); }
+    }
+
+    /* ── SPINNER ── */
+    .spin-ring {
+      width: 36px; height: 36px;
+      border: 3px solid var(--border-glow);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── TEXT ── */
+    .state-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .state-label.loading { color: var(--accent); }
+    .state-label.success { color: var(--success); }
+    .state-label.error   { color: var(--danger); }
+    .state-label.reset   { color: var(--warning); }
+
+    .state-title {
+      font-family: var(--sans);
+      font-size: 26px;
+      font-weight: 700;
+      color: #e8f4ff;
+      margin-bottom: 12px;
+    }
+
+    .state-desc {
+      font-size: 13px;
+      color: var(--text-dim);
+      font-weight: 300;
+      line-height: 1.8;
+      margin-bottom: 28px;
+    }
+
+    /* ── STATUS LOG ── */
+    .log {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      padding: 14px 16px;
+      text-align: left;
+      margin-bottom: 28px;
+    }
+
+    .log-line {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      line-height: 1.9;
+    }
+
+    .log-line .ts { color: var(--text-muted); }
+    .log-line .ok { color: var(--success); }
+    .log-line .err { color: var(--danger); }
+    .log-line .info { color: var(--accent); }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 13px;
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s, border-color 0.2s, color 0.2s;
+      border: none;
+      margin-bottom: 10px;
+    }
+
+    .btn-primary  { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #1a90e8; box-shadow: 0 0 20px var(--accent-glow); }
+
+    .btn-success  { background: var(--success); color: #0a1a10; }
+    .btn-success:hover { filter: brightness(1.1); }
+
+    .btn-outline  {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+    }
+    .btn-outline:hover { border-color: var(--border-glow); color: var(--text-primary); }
+
+    /* ── PASSWORD RESET FORM (shown for reset mode) ── */
+    .reset-form { display: none; text-align: left; }
+    .reset-form.active { display: block; }
+
+    .field { margin-bottom: 18px; }
+
+    .field-label {
+      display: block;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .field-input {
+      width: 100%;
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      font-family: var(--mono);
+      font-size: 13px;
+      padding: 11px 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .field-input::placeholder { color: var(--text-muted); }
+
+    .field-input:focus {
+      border-color: var(--border-glow);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    .countdown {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 12px;
+    }
+
+    .countdown span { color: var(--success); }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="topbar-logo">FELIX//SYS</div>
+    <div class="topbar-sub">EMAIL ACTION HANDLER</div>
+  </div>
+
+  <div class="panel" id="mainPanel">
+
+    <!-- STATE: LOADING -->
+    <div class="state active" id="stateLoading">
+      <div class="icon-ring loading">
+        <div class="spin-ring"></div>
+      </div>
+      <div class="state-label loading">// PROCESSING</div>
+      <div class="state-title">Processing Request</div>
+      <div class="state-desc">Validating your action code with Firebase. Please wait...</div>
+      <div class="log">
+        <div class="log-line"><span class="ts">[SYS] </span><span class="info">Parsing URL parameters...</span></div>
+        <div class="log-line" id="logMode"><span class="ts">[SYS] </span>Detecting action mode...</div>
+        <div class="log-line" id="logCode"><span class="ts">[SYS] </span>Validating oobCode...</div>
+      </div>
+    </div>
+
+    <!-- STATE: SUCCESS (verify email) -->
+    <div class="state" id="stateVerifySuccess">
+      <div class="icon-ring success">✓</div>
+      <div class="state-label success">// VERIFIED</div>
+      <div class="state-title">Email Verified</div>
+      <div class="state-desc">
+        Your email address has been successfully verified. Your Felix Enterprise account is now fully active.
+      </div>
+      <div class="log">
+        <div class="log-line"><span class="ts">[AUTH] </span><span class="ok">✓ Email verified successfully.</span></div>
+        <div class="log-line"><span class="ts">[AUTH] </span><span class="ok">✓ Account status: ACTIVE</span></div>
+        <div class="log-line"><span class="ts">[SYS] </span><span class="info">Redirecting in <span id="countdown">5</span>s...</span></div>
+      </div>
+      <a href="login.html" class="btn btn-success">PROCEED TO SIGN IN</a>
+      <a href="index.html" class="btn btn-outline">RETURN TO PORTAL</a>
+    </div>
+
+    <!-- STATE: SUCCESS (reset password) -->
+    <div class="state" id="stateResetSuccess">
+      <div class="icon-ring success">✓</div>
+      <div class="state-label success">// RESET COMPLETE</div>
+      <div class="state-title">Password Updated</div>
+      <div class="state-desc">
+        Your password has been successfully reset. You can now sign in with your new credentials.
+      </div>
+      <a href="login.html" class="btn btn-success">SIGN IN NOW</a>
+    </div>
+
+    <!-- STATE: ERROR -->
+    <div class="state" id="stateError">
+      <div class="icon-ring error">✕</div>
+      <div class="state-label error">// ACTION FAILED</div>
+      <div class="state-title">Action Invalid</div>
+      <div class="state-desc" id="errorDesc">The link you used is invalid or has expired. Verification links are valid for 24 hours.</div>
+      <div class="log">
+        <div class="log-line"><span class="ts">[AUTH] </span><span class="err" id="errorCode">ERR_INVALID_CODE</span></div>
+      </div>
+      <a href="register.html" class="btn btn-primary">RE-REGISTER</a>
+      <a href="login.html" class="btn btn-outline">BACK TO SIGN IN</a>
+    </div>
+
+    <!-- STATE: PASSWORD RESET FORM -->
+    <div class="state" id="stateResetForm">
+      <div class="icon-ring reset">🔑</div>
+      <div class="state-label reset">// RESET PASSWORD</div>
+      <div class="state-title">Set New Password</div>
+      <div class="state-desc">Choose a new secure password for your Felix account.</div>
+
+      <div class="reset-form active">
+        <div class="field">
+          <label class="field-label" for="newPassword">New Password</label>
+          <input class="field-input" type="password" id="newPassword" placeholder="Min. 8 characters"/>
+        </div>
+        <div class="field">
+          <label class="field-label" for="confirmNewPassword">Confirm Password</label>
+          <input class="field-input" type="password" id="confirmNewPassword" placeholder="Re-enter password"/>
+        </div>
+        <button class="btn btn-primary" onclick="handleReset()" id="resetBtn">SET NEW PASSWORD</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
+    import {
+      getAuth,
+      applyActionCode,
+      verifyPasswordResetCode,
+      confirmPasswordReset
+    } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCtEi3_E3ZOwjTdw4tSexlPvEB27lZp0UU",
+      authDomain: "felix-582ed.firebaseapp.com",
+      projectId: "felix-582ed",
+      storageBucket: "felix-582ed.firebasestorage.app",
+      messagingSenderId: "434043393116",
+      appId: "1:434043393116:web:5f20713d301320c38b0299",
+      measurementId: "G-JXR6MRSYME"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const auth = getAuth(app);
+
+    /* ── Parse URL Params ── */
+    const params   = new URLSearchParams(window.location.search);
+    const mode     = params.get("mode");
+    const oobCode  = params.get("oobCode");
+    const panel    = document.getElementById("mainPanel");
+
+    let resetOobCode = null;
+
+    /* ── State Switcher ── */
+    function showState(id) {
+      document.querySelectorAll(".state").forEach(el => el.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+    }
+
+    function setError(code, desc) {
+      panel.className = "panel error";
+      document.getElementById("errorCode").textContent = code;
+      document.getElementById("errorDesc").textContent = desc;
+      showState("stateError");
+    }
+
+    /* ── Update log lines ── */
+    function logUpdate(id, type, text) {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = `<span class="ts">[SYS] </span><span class="${type}">${text}</span>`;
+    }
+
+    /* ── Main Handler ── */
+    async function handleAction() {
+      logUpdate("logMode", "info", `Mode detected: ${mode || "UNKNOWN"}`);
+
+      if (!oobCode) {
+        return setError("ERR_MISSING_CODE", "No action code was found in this URL. The link may be malformed.");
+      }
+
+      logUpdate("logCode", "info", "oobCode present — validating...");
+
+      if (!mode) {
+        return setError("ERR_MISSING_MODE", "No action mode was specified in this URL.");
+      }
+
+      try {
+        if (mode === "verifyEmail") {
+          await applyActionCode(auth, oobCode);
+          panel.className = "panel success";
+          showState("stateVerifySuccess");
+
+          /* Auto-redirect countdown */
+          let secs = 5;
+          const cdEl = document.getElementById("countdown");
+          const interval = setInterval(() => {
+            secs--;
+            if (cdEl) cdEl.textContent = secs;
+            if (secs <= 0) {
+              clearInterval(interval);
+              window.location.href = "login.html";
+            }
+          }, 1000);
+
+        } else if (mode === "resetPassword") {
+          await verifyPasswordResetCode(auth, oobCode);
+          resetOobCode = oobCode;
+          panel.className = "panel reset";
+          showState("stateResetForm");
+
+        } else {
+          setError("ERR_UNKNOWN_MODE", `Unrecognized action mode: "${mode}".`);
+        }
+
+      } catch (err) {
+        const errMap = {
+          "auth/expired-action-code":    ["ERR_EXPIRED_CODE",   "This link has expired. Verification links are only valid for 24 hours. Please request a new one."],
+          "auth/invalid-action-code":    ["ERR_INVALID_CODE",   "This link is invalid or has already been used. Please request a new verification email."],
+          "auth/user-disabled":          ["ERR_USER_DISABLED",  "This account has been disabled by an administrator."],
+          "auth/user-not-found":         ["ERR_USER_NOT_FOUND", "No account is associated with this verification link."],
+        };
+        const [code, desc] = errMap[err.code] || ["ERR_UNKNOWN", err.message];
+        setError(code, desc);
+      }
+    }
+
+    /* ── Password Reset Submit ── */
+    window.handleReset = async function () {
+      const pw   = document.getElementById("newPassword").value;
+      const pw2  = document.getElementById("confirmNewPassword").value;
+      const btn  = document.getElementById("resetBtn");
+
+      if (pw.length < 8) return alert("Password must be at least 8 characters.");
+      if (pw !== pw2)    return alert("Passwords do not match.");
+
+      btn.disabled = true;
+      btn.textContent = "UPDATING...";
+
+      try {
+        await confirmPasswordReset(auth, resetOobCode, pw);
+        panel.className = "panel success";
+        showState("stateResetSuccess");
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = "SET NEW PASSWORD";
+        alert(`Error: ${err.message}`);
+      }
+    };
+
+    /* ── Kick it off ── */
+    handleAction();
+  </script>
+</body>
+</html>
