@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Felix Enterprise — Register</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&family=Exo+2:wght@200;300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-base:      #080c10;
+      --bg-panel:     #0d1117;
+      --bg-card:      #111820;
+      --border:       #1e2d3d;
+      --border-glow:  #1a4a6e;
+      --accent:       #0f7fd4;
+      --accent-dim:   #0a5a96;
+      --accent-soft:  rgba(15,127,212,0.10);
+      --accent-glow:  rgba(15,127,212,0.3);
+      --text-primary: #ccd6e0;
+      --text-dim:     #5a7a94;
+      --text-muted:   #2e4558;
+      --danger:       #e05252;
+      --danger-soft:  rgba(224,82,82,0.12);
+      --success:      #2ecc71;
+      --success-soft: rgba(46,204,113,0.12);
+      --mono:         'Share Tech Mono', monospace;
+      --sans:         'Rajdhani', sans-serif;
+      --body:         'Exo 2', sans-serif;
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      background: var(--bg-base);
+      color: var(--text-primary);
+      font-family: var(--body);
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 24px;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(rgba(15,127,212,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(15,127,212,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(15,127,212,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ── TOP BAR ── */
+    .topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: 48px;
+      background: rgba(8,12,16,0.95);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 32px;
+      backdrop-filter: blur(8px);
+    }
+
+    .topbar-logo {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+    }
+
+    .topbar-back {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      text-decoration: none;
+      letter-spacing: 0.15em;
+      transition: color 0.2s;
+    }
+
+    .topbar-back:hover { color: var(--accent); }
+
+    /* ── PANEL ── */
+    .panel {
+      position: relative; z-index: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      width: 100%; max-width: 460px;
+      padding: 40px 40px 36px;
+      margin-top: 48px;
+      animation: slideIn 0.5s ease both;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+
+    /* ── HEADER ── */
+    .panel-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--accent);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .panel-title {
+      font-family: var(--sans);
+      font-size: 28px;
+      font-weight: 700;
+      color: #e8f4ff;
+      margin-bottom: 4px;
+    }
+
+    .panel-subtitle {
+      font-size: 13px;
+      color: var(--text-dim);
+      font-weight: 300;
+      margin-bottom: 32px;
+    }
+
+    /* ── FORM ── */
+    .field {
+      margin-bottom: 18px;
+    }
+
+    .field-label {
+      display: block;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .field-row {
+      position: relative;
+    }
+
+    .field-input {
+      width: 100%;
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      font-family: var(--mono);
+      font-size: 13px;
+      padding: 11px 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      letter-spacing: 0.04em;
+    }
+
+    .field-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .field-input:focus {
+      border-color: var(--border-glow);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    .field-input.error {
+      border-color: var(--danger);
+      box-shadow: 0 0 0 3px var(--danger-soft);
+    }
+
+    /* password strength */
+    .strength-bar {
+      margin-top: 6px;
+      display: flex; gap: 4px;
+    }
+
+    .strength-seg {
+      flex: 1; height: 3px;
+      background: var(--border);
+      transition: background 0.3s;
+    }
+
+    .strength-seg.weak   { background: var(--danger); }
+    .strength-seg.fair   { background: #e0a832; }
+    .strength-seg.strong { background: var(--success); }
+
+    .strength-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--text-dim);
+      margin-top: 4px;
+      letter-spacing: 0.1em;
+    }
+
+    /* ── ALERT ── */
+    .alert {
+      display: none;
+      padding: 12px 14px;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      line-height: 1.5;
+      margin-bottom: 20px;
+      border-left: 3px solid;
+    }
+
+    .alert.error {
+      background: var(--danger-soft);
+      border-color: var(--danger);
+      color: #f08080;
+      display: block;
+    }
+
+    .alert.success {
+      background: var(--success-soft);
+      border-color: var(--success);
+      color: #70e0a0;
+      display: block;
+    }
+
+    /* ── SUBMIT BUTTON ── */
+    .btn-submit {
+      width: 100%;
+      background: var(--accent);
+      border: none;
+      color: #fff;
+      font-family: var(--sans);
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 14px;
+      cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s, opacity 0.2s;
+      margin-top: 8px;
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      background: #1a90e8;
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-submit .spinner {
+      display: inline-block;
+      width: 12px; height: 12px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ── FOOTER LINK ── */
+    .panel-footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .panel-footer a {
+      color: var(--accent);
+      text-decoration: none;
+      font-family: var(--mono);
+      font-size: 11px;
+    }
+
+    .panel-footer a:hover { text-decoration: underline; }
+
+    /* ── DIVIDER ── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 28px 0 24px;
+    }
+
+    .terms-note {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.6;
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="topbar-logo">FELIX//SYS</div>
+    <a href="index.html" class="topbar-back">← BACK TO PORTAL</a>
+  </div>
+
+  <div class="panel">
+    <div class="panel-label">// ENROLLMENT</div>
+    <div class="panel-title">Create Account</div>
+    <div class="panel-subtitle">Register for Felix Enterprise access.</div>
+
+    <div class="alert" id="alert"></div>
+
+    <div class="field">
+      <label class="field-label" for="displayName">Full Name</label>
+      <div class="field-row">
+        <input class="field-input" type="text" id="displayName" placeholder="Agent Full Name" autocomplete="name"/>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="email">Email Address</label>
+      <div class="field-row">
+        <input class="field-input" type="email" id="email" placeholder="agent@organization.gov" autocomplete="email"/>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="password">Password</label>
+      <div class="field-row">
+        <input class="field-input" type="password" id="password" placeholder="Min. 8 characters" autocomplete="new-password"/>
+      </div>
+      <div class="strength-bar">
+        <div class="strength-seg" id="s1"></div>
+        <div class="strength-seg" id="s2"></div>
+        <div class="strength-seg" id="s3"></div>
+        <div class="strength-seg" id="s4"></div>
+      </div>
+      <div class="strength-label" id="strengthLabel">PASSWORD STRENGTH</div>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="confirmPassword">Confirm Password</label>
+      <div class="field-row">
+        <input class="field-input" type="password" id="confirmPassword" placeholder="Re-enter password" autocomplete="new-password"/>
+      </div>
+    </div>
+
+    <button class="btn-submit" id="registerBtn" onclick="handleRegister()">
+      REQUEST ACCESS
+    </button>
+
+    <div class="terms-note">
+      By registering, you acknowledge that all activity within Felix Enterprise is subject to monitoring and audit logging.
+    </div>
+
+    <hr class="divider"/>
+
+    <div class="panel-footer">
+      Already have an account? &nbsp;<a href="login.html">Sign In →</a>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      updateProfile,
+      sendEmailVerification
+    } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCtEi3_E3ZOwjTdw4tSexlPvEB27lZp0UU",
+      authDomain: "felix-582ed.firebaseapp.com",
+      projectId: "felix-582ed",
+      storageBucket: "felix-582ed.firebasestorage.app",
+      messagingSenderId: "434043393116",
+      appId: "1:434043393116:web:5f20713d301320c38b0299",
+      measurementId: "G-JXR6MRSYME"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const auth = getAuth(app);
+
+    /* ── Password Strength ── */
+    const pwInput = document.getElementById("password");
+    const segs = [document.getElementById("s1"), document.getElementById("s2"), document.getElementById("s3"), document.getElementById("s4")];
+    const strengthLabel = document.getElementById("strengthLabel");
+
+    pwInput.addEventListener("input", () => {
+      const val = pwInput.value;
+      let score = 0;
+      if (val.length >= 8) score++;
+      if (/[A-Z]/.test(val)) score++;
+      if (/[0-9]/.test(val)) score++;
+      if (/[^A-Za-z0-9]/.test(val)) score++;
+
+      const classes = ["", "weak", "fair", "fair", "strong"];
+      const labels  = ["PASSWORD STRENGTH", "WEAK", "FAIR", "GOOD", "STRONG"];
+      segs.forEach((s, i) => {
+        s.className = "strength-seg";
+        if (i < score) s.classList.add(score <= 1 ? "weak" : score <= 3 ? "fair" : "strong");
+      });
+      strengthLabel.textContent = labels[score];
+    });
+
+    /* ── Show Alert ── */
+    function showAlert(msg, type = "error") {
+      const el = document.getElementById("alert");
+      el.textContent = msg;
+      el.className = `alert ${type}`;
+    }
+
+    function clearAlert() {
+      const el = document.getElementById("alert");
+      el.className = "alert";
+    }
+
+    /* ── Register ── */
+    window.handleRegister = async function () {
+      clearAlert();
+      const displayName    = document.getElementById("displayName").value.trim();
+      const email          = document.getElementById("email").value.trim();
+      const password       = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+      const btn            = document.getElementById("registerBtn");
+
+      if (!displayName) return showAlert("⚠ Full name is required.");
+      if (!email)       return showAlert("⚠ Email address is required.");
+      if (password.length < 8) return showAlert("⚠ Password must be at least 8 characters.");
+      if (password !== confirmPassword) return showAlert("⚠ Passwords do not match.");
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> PROCESSING...';
+
+      try {
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        await updateProfile(cred.user, { displayName });
+        await sendEmailVerification(cred.user);
+        window.location.href = "verify-sent.html";
+      } catch (err) {
+        const messages = {
+          "auth/email-already-in-use":    "⚠ An account with this email already exists.",
+          "auth/invalid-email":           "⚠ Invalid email address format.",
+          "auth/weak-password":           "⚠ Password is too weak.",
+          "auth/network-request-failed":  "⚠ Network error. Check your connection.",
+        };
+        showAlert(messages[err.code] || `⚠ Error: ${err.message}`);
+        btn.disabled = false;
+        btn.innerHTML = "REQUEST ACCESS";
+      }
+    };
+  </script>
+</body>
+</html>
