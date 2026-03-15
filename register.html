@@ -3,373 +3,309 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Felix Enterprise — Register</title>
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&family=Exo+2:wght@200;300;400;600&display=swap" rel="stylesheet"/>
+  <title>Felix Enterprise — Create Account</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&family=Source+Serif+4:wght@400;600&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg-base:      #080c10;
-      --bg-panel:     #0d1117;
-      --bg-card:      #111820;
-      --border:       #1e2d3d;
-      --border-glow:  #1a4a6e;
-      --accent:       #0f7fd4;
-      --accent-dim:   #0a5a96;
-      --accent-soft:  rgba(15,127,212,0.10);
-      --accent-glow:  rgba(15,127,212,0.3);
-      --text-primary: #ccd6e0;
-      --text-dim:     #5a7a94;
-      --text-muted:   #2e4558;
-      --danger:       #e05252;
-      --danger-soft:  rgba(224,82,82,0.12);
-      --success:      #2ecc71;
-      --success-soft: rgba(46,204,113,0.12);
-      --mono:         'Share Tech Mono', monospace;
-      --sans:         'Rajdhani', sans-serif;
-      --body:         'Exo 2', sans-serif;
+      --bg:          #f4f6f8;
+      --surface:     #ffffff;
+      --border:      #d0d7de;
+      --border-dark: #b0bac5;
+      --border-focus:#005EB8;
+      --blue:        #005EB8;
+      --blue-hover:  #004a93;
+      --blue-light:  #e8f0fb;
+      --blue-mid:    #ccddf5;
+      --text:        #1a1d23;
+      --text-sub:    #4a5568;
+      --text-dim:    #718096;
+      --text-muted:  #a0aec0;
+      --success:     #276749;
+      --success-bg:  #e6f4ee;
+      --danger:      #c53030;
+      --danger-bg:   #fff5f5;
+      --font:        'Source Sans 3', sans-serif;
+      --serif:       'Source Serif 4', serif;
+      --radius:      3px;
     }
-
-    html, body { height: 100%; }
 
     body {
-      background: var(--bg-base);
-      color: var(--text-primary);
-      font-family: var(--body);
+      background: var(--bg);
+      font-family: var(--font);
+      color: var(--text);
       min-height: 100vh;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 24px;
+      display: flex;
+      flex-direction: column;
     }
 
-    body::before {
-      content: '';
-      position: fixed; inset: 0; z-index: 0;
-      background-image:
-        linear-gradient(rgba(15,127,212,0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(15,127,212,0.04) 1px, transparent 1px);
-      background-size: 40px 40px;
-      pointer-events: none;
-    }
-
-    body::after {
-      content: '';
-      position: fixed; inset: 0; z-index: 0;
-      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(15,127,212,0.06) 0%, transparent 70%);
-      pointer-events: none;
-    }
-
-    /* ── TOP BAR ── */
-    .topbar {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      height: 48px;
-      background: rgba(8,12,16,0.95);
-      border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
+    .header {
+      background: var(--blue);
       padding: 0 32px;
-      backdrop-filter: blur(8px);
+      height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0;
     }
 
-    .topbar-logo {
-      font-family: var(--mono);
-      font-size: 13px;
-      color: var(--accent);
-      letter-spacing: 0.1em;
+    .header-brand { display: flex; align-items: center; gap: 12px; }
+
+    .header-logo {
+      width: 32px; height: 32px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; color: #fff; font-weight: 700;
+      font-family: var(--serif);
     }
 
-    .topbar-back {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--text-dim);
-      text-decoration: none;
-      letter-spacing: 0.15em;
-      transition: color 0.2s;
+    .header-name { color: #fff; font-size: 17px; font-weight: 600; }
+    .header-sub  { color: rgba(255,255,255,0.65); font-size: 12px; }
+
+    .header-back {
+      color: rgba(255,255,255,0.75); font-size: 13px;
+      text-decoration: none; display: flex; align-items: center; gap: 4px;
+      transition: color 0.15s;
     }
 
-    .topbar-back:hover { color: var(--accent); }
+    .header-back:hover { color: #fff; }
 
-    /* ── PANEL ── */
-    .panel {
-      position: relative; z-index: 1;
-      background: var(--bg-card);
+    main {
+      flex: 1;
+      display: flex; align-items: center; justify-content: center;
+      padding: 40px 24px;
+    }
+
+    .form-card {
+      background: var(--surface);
       border: 1px solid var(--border);
-      width: 100%; max-width: 460px;
-      padding: 40px 40px 36px;
-      margin-top: 48px;
-      animation: slideIn 0.5s ease both;
+      border-radius: var(--radius);
+      width: 100%; max-width: 440px;
+      overflow: hidden;
     }
 
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to   { opacity: 1; transform: translateY(0); }
+    .form-card-header {
+      background: var(--blue-light);
+      border-bottom: 1px solid var(--blue-mid);
+      padding: 20px 28px 18px;
     }
 
-    .panel::before {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, var(--accent), transparent);
+    .form-eyebrow {
+      font-size: 11px; font-weight: 600; color: var(--blue);
+      text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px;
     }
 
-    /* ── HEADER ── */
-    .panel-label {
-      font-family: var(--mono);
-      font-size: 9px;
-      color: var(--accent);
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      margin-bottom: 8px;
+    .form-title {
+      font-family: var(--serif); font-size: 22px; font-weight: 600; color: var(--text);
     }
 
-    .panel-title {
-      font-family: var(--sans);
-      font-size: 28px;
-      font-weight: 700;
-      color: #e8f4ff;
-      margin-bottom: 4px;
+    .form-body { padding: 24px 28px 28px; }
+
+    /* ── ALERT ── */
+    .alert {
+      display: none; border-radius: var(--radius);
+      padding: 10px 14px; font-size: 13px; line-height: 1.5;
+      margin-bottom: 18px; border-left: 3px solid;
     }
 
-    .panel-subtitle {
-      font-size: 13px;
-      color: var(--text-dim);
-      font-weight: 300;
-      margin-bottom: 32px;
-    }
+    .alert.error   { background: var(--danger-bg);  border-color: var(--danger);  color: var(--danger);  display: block; }
+    .alert.success { background: var(--success-bg); border-color: #52b788; color: var(--success); display: block; }
 
-    /* ── FORM ── */
-    .field {
-      margin-bottom: 18px;
-    }
+    /* ── FIELDS ── */
+    .field { margin-bottom: 14px; }
 
     .field-label {
-      display: block;
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--text-dim);
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      margin-bottom: 8px;
-    }
-
-    .field-row {
-      position: relative;
+      display: block; font-size: 13px; font-weight: 600;
+      color: var(--text-sub); margin-bottom: 5px;
     }
 
     .field-input {
       width: 100%;
-      background: var(--bg-panel);
-      border: 1px solid var(--border);
-      color: var(--text-primary);
-      font-family: var(--mono);
-      font-size: 13px;
-      padding: 11px 14px;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-      letter-spacing: 0.04em;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); color: var(--text);
+      font-family: var(--font); font-size: 14px; padding: 9px 12px;
+      outline: none; transition: border-color 0.15s, box-shadow 0.15s;
     }
 
-    .field-input::placeholder {
-      color: var(--text-muted);
-    }
+    .field-input::placeholder { color: var(--text-muted); }
 
     .field-input:focus {
-      border-color: var(--border-glow);
-      box-shadow: 0 0 0 3px var(--accent-soft);
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px var(--blue-mid);
     }
 
-    .field-input.error {
-      border-color: var(--danger);
-      box-shadow: 0 0 0 3px var(--danger-soft);
-    }
+    .field-input.invalid { border-color: var(--danger); }
 
-    /* password strength */
-    .strength-bar {
-      margin-top: 6px;
-      display: flex; gap: 4px;
+    /* ── STRENGTH ── */
+    .strength-track {
+      display: flex; gap: 4px; margin-top: 6px;
     }
 
     .strength-seg {
-      flex: 1; height: 3px;
-      background: var(--border);
-      transition: background 0.3s;
+      flex: 1; height: 3px; border-radius: 2px;
+      background: var(--border); transition: background 0.3s;
     }
 
     .strength-seg.weak   { background: var(--danger); }
-    .strength-seg.fair   { background: #e0a832; }
-    .strength-seg.strong { background: var(--success); }
+    .strength-seg.fair   { background: #d97706; }
+    .strength-seg.good   { background: #2b7a0b; }
 
-    .strength-label {
-      font-family: var(--mono);
-      font-size: 9px;
-      color: var(--text-dim);
-      margin-top: 4px;
-      letter-spacing: 0.1em;
+    .strength-hint {
+      font-size: 11px; color: var(--text-muted); margin-top: 4px;
     }
 
-    /* ── ALERT ── */
-    .alert {
-      display: none;
-      padding: 12px 14px;
-      font-family: var(--mono);
-      font-size: 11px;
-      letter-spacing: 0.05em;
-      line-height: 1.5;
-      margin-bottom: 20px;
-      border-left: 3px solid;
+    /* ── BUTTONS ── */
+    .btn {
+      width: 100%; padding: 10px 16px; border: none;
+      border-radius: var(--radius); font-family: var(--font);
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      transition: background 0.15s, box-shadow 0.15s, opacity 0.15s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
     }
 
-    .alert.error {
-      background: var(--danger-soft);
-      border-color: var(--danger);
-      color: #f08080;
-      display: block;
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    .btn-primary { background: var(--blue); color: #fff; margin-bottom: 10px; }
+    .btn-primary:hover:not(:disabled) { background: var(--blue-hover); box-shadow: 0 1px 4px rgba(0,94,184,0.3); }
+
+    .btn-google {
+      background: var(--surface); color: var(--text);
+      border: 1px solid var(--border);
     }
 
-    .alert.success {
-      background: var(--success-soft);
-      border-color: var(--success);
-      color: #70e0a0;
-      display: block;
-    }
+    .btn-google:hover:not(:disabled) { background: var(--bg); border-color: var(--border-dark); }
 
-    /* ── SUBMIT BUTTON ── */
-    .btn-submit {
-      width: 100%;
-      background: var(--accent);
-      border: none;
-      color: #fff;
-      font-family: var(--sans);
-      font-size: 15px;
-      font-weight: 700;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      padding: 14px;
-      cursor: pointer;
-      transition: background 0.2s, box-shadow 0.2s, opacity 0.2s;
-      margin-top: 8px;
-    }
+    .google-icon { width: 18px; height: 18px; flex-shrink: 0; }
 
-    .btn-submit:hover:not(:disabled) {
-      background: #1a90e8;
-      box-shadow: 0 0 20px var(--accent-glow);
-    }
-
-    .btn-submit:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .btn-submit .spinner {
-      display: inline-block;
-      width: 12px; height: 12px;
-      border: 2px solid rgba(255,255,255,0.3);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      vertical-align: middle;
-      margin-right: 8px;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    /* ── FOOTER LINK ── */
-    .panel-footer {
-      margin-top: 24px;
-      text-align: center;
-      font-size: 12px;
-      color: var(--text-dim);
-    }
-
-    .panel-footer a {
-      color: var(--accent);
-      text-decoration: none;
-      font-family: var(--mono);
-      font-size: 11px;
-    }
-
-    .panel-footer a:hover { text-decoration: underline; }
-
-    /* ── DIVIDER ── */
     .divider {
-      border: none;
-      border-top: 1px solid var(--border);
-      margin: 28px 0 24px;
+      display: flex; align-items: center; gap: 12px;
+      margin: 16px 0; color: var(--text-muted); font-size: 12px;
     }
 
-    .terms-note {
-      font-size: 11px;
-      color: var(--text-muted);
-      text-align: center;
-      line-height: 1.6;
-      margin-top: 16px;
+    .divider::before, .divider::after {
+      content: ''; flex: 1; border-top: 1px solid var(--border);
     }
+
+    .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin 0.7s linear infinite; flex-shrink: 0;
+    }
+
+    .spinner-dark { border-color: rgba(0,0,0,0.15); border-top-color: var(--text-sub); }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── TERMS NOTE ── */
+    .terms-note {
+      margin-top: 14px;
+      font-size: 11px; color: var(--text-muted); line-height: 1.6; text-align: center;
+    }
+
+    .form-footer {
+      margin-top: 20px; padding-top: 16px;
+      border-top: 1px solid var(--border);
+      text-align: center; font-size: 13px; color: var(--text-dim);
+    }
+
+    .form-footer a {
+      color: var(--blue); text-decoration: none; font-weight: 600;
+    }
+
+    .form-footer a:hover { text-decoration: underline; }
+
+    footer {
+      background: var(--surface); border-top: 1px solid var(--border);
+      padding: 14px 32px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    footer div { font-size: 12px; color: var(--text-muted); }
   </style>
 </head>
 <body>
 
-  <div class="topbar">
-    <div class="topbar-logo">FELIX//SYS</div>
-    <a href="index.html" class="topbar-back">← BACK TO PORTAL</a>
+  <div class="header">
+    <div class="header-brand">
+      <div class="header-logo">F</div>
+      <div>
+        <div class="header-name">Felix Enterprise</div>
+        <div class="header-sub">Case Management System</div>
+      </div>
+    </div>
+    <a href="index.html" class="header-back">← Portal Home</a>
   </div>
 
-  <div class="panel">
-    <div class="panel-label">// ENROLLMENT</div>
-    <div class="panel-title">Create Account</div>
-    <div class="panel-subtitle">Register for Felix Enterprise access.</div>
+  <main>
+    <div class="form-card">
+      <div class="form-card-header">
+        <div class="form-eyebrow">New User Enrollment</div>
+        <div class="form-title">Create Account</div>
+      </div>
 
-    <div class="alert" id="alert"></div>
+      <div class="form-body">
+        <div class="alert" id="alert"></div>
 
-    <div class="field">
-      <label class="field-label" for="displayName">Full Name</label>
-      <div class="field-row">
-        <input class="field-input" type="text" id="displayName" placeholder="Agent Full Name" autocomplete="name"/>
+        <!-- Google Sign Up -->
+        <button class="btn btn-google" id="googleBtn" onclick="handleGoogle()">
+          <svg class="google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+          </svg>
+          Sign up with Google
+        </button>
+
+        <div class="divider">or register with email</div>
+
+        <div class="field">
+          <label class="field-label" for="displayName">Full Name</label>
+          <input class="field-input" type="text" id="displayName" placeholder="Your full name" autocomplete="name"/>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="email">Email Address</label>
+          <input class="field-input" type="email" id="email" placeholder="you@organization.gov" autocomplete="email"/>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="password">Password</label>
+          <input class="field-input" type="password" id="password" placeholder="Minimum 8 characters" autocomplete="new-password"/>
+          <div class="strength-track">
+            <div class="strength-seg" id="s1"></div>
+            <div class="strength-seg" id="s2"></div>
+            <div class="strength-seg" id="s3"></div>
+            <div class="strength-seg" id="s4"></div>
+          </div>
+          <div class="strength-hint" id="strengthHint">Password strength</div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="confirmPassword">Confirm Password</label>
+          <input class="field-input" type="password" id="confirmPassword" placeholder="Re-enter password" autocomplete="new-password"/>
+        </div>
+
+        <button class="btn btn-primary" id="registerBtn" onclick="handleRegister()">
+          Create Account
+        </button>
+
+        <div class="terms-note">
+          By creating an account, you acknowledge that all activity within Felix Enterprise is subject to monitoring and audit logging.
+        </div>
+
+        <div class="form-footer">
+          Already have an account? <a href="login.html">Sign in</a>
+        </div>
       </div>
     </div>
+  </main>
 
-    <div class="field">
-      <label class="field-label" for="email">Email Address</label>
-      <div class="field-row">
-        <input class="field-input" type="email" id="email" placeholder="agent@organization.gov" autocomplete="email"/>
-      </div>
-    </div>
-
-    <div class="field">
-      <label class="field-label" for="password">Password</label>
-      <div class="field-row">
-        <input class="field-input" type="password" id="password" placeholder="Min. 8 characters" autocomplete="new-password"/>
-      </div>
-      <div class="strength-bar">
-        <div class="strength-seg" id="s1"></div>
-        <div class="strength-seg" id="s2"></div>
-        <div class="strength-seg" id="s3"></div>
-        <div class="strength-seg" id="s4"></div>
-      </div>
-      <div class="strength-label" id="strengthLabel">PASSWORD STRENGTH</div>
-    </div>
-
-    <div class="field">
-      <label class="field-label" for="confirmPassword">Confirm Password</label>
-      <div class="field-row">
-        <input class="field-input" type="password" id="confirmPassword" placeholder="Re-enter password" autocomplete="new-password"/>
-      </div>
-    </div>
-
-    <button class="btn-submit" id="registerBtn" onclick="handleRegister()">
-      REQUEST ACCESS
-    </button>
-
-    <div class="terms-note">
-      By registering, you acknowledge that all activity within Felix Enterprise is subject to monitoring and audit logging.
-    </div>
-
-    <hr class="divider"/>
-
-    <div class="panel-footer">
-      Already have an account? &nbsp;<a href="login.html">Sign In →</a>
-    </div>
-  </div>
+  <footer>
+    <div>Felix Enterprise &mdash; NBEP</div>
+    <div>All sessions encrypted and logged</div>
+  </footer>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
@@ -378,7 +314,9 @@
       getAuth,
       createUserWithEmailAndPassword,
       updateProfile,
-      sendEmailVerification
+      sendEmailVerification,
+      signInWithPopup,
+      GoogleAuthProvider
     } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -391,33 +329,32 @@
       measurementId: "G-JXR6MRSYME"
     };
 
-    const app = initializeApp(firebaseConfig);
+    const app      = initializeApp(firebaseConfig);
     const analytics = getAnalytics(app);
-    const auth = getAuth(app);
+    const auth     = getAuth(app);
+    const provider = new GoogleAuthProvider();
 
-    /* ── Password Strength ── */
-    const pwInput = document.getElementById("password");
-    const segs = [document.getElementById("s1"), document.getElementById("s2"), document.getElementById("s3"), document.getElementById("s4")];
-    const strengthLabel = document.getElementById("strengthLabel");
+    /* ── Password strength ── */
+    const segs   = [1,2,3,4].map(i => document.getElementById(`s${i}`));
+    const hint   = document.getElementById("strengthHint");
+    const labels = ["Password strength", "Weak", "Fair", "Good", "Strong"];
+    const cls    = ["", "weak", "fair", "good", "good"];
 
-    pwInput.addEventListener("input", () => {
-      const val = pwInput.value;
+    document.getElementById("password").addEventListener("input", (e) => {
+      const v = e.target.value;
       let score = 0;
-      if (val.length >= 8) score++;
-      if (/[A-Z]/.test(val)) score++;
-      if (/[0-9]/.test(val)) score++;
-      if (/[^A-Za-z0-9]/.test(val)) score++;
-
-      const classes = ["", "weak", "fair", "fair", "strong"];
-      const labels  = ["PASSWORD STRENGTH", "WEAK", "FAIR", "GOOD", "STRONG"];
+      if (v.length >= 8)          score++;
+      if (/[A-Z]/.test(v))        score++;
+      if (/[0-9]/.test(v))        score++;
+      if (/[^A-Za-z0-9]/.test(v)) score++;
       segs.forEach((s, i) => {
         s.className = "strength-seg";
-        if (i < score) s.classList.add(score <= 1 ? "weak" : score <= 3 ? "fair" : "strong");
+        if (i < score) s.classList.add(cls[score]);
       });
-      strengthLabel.textContent = labels[score];
+      hint.textContent = labels[score];
     });
 
-    /* ── Show Alert ── */
+    /* ── Alerts ── */
     function showAlert(msg, type = "error") {
       const el = document.getElementById("alert");
       el.textContent = msg;
@@ -425,26 +362,51 @@
     }
 
     function clearAlert() {
-      const el = document.getElementById("alert");
-      el.className = "alert";
+      document.getElementById("alert").className = "alert";
     }
 
-    /* ── Register ── */
+    /* ── Google ── */
+    window.handleGoogle = async function () {
+      clearAlert();
+      const btn = document.getElementById("googleBtn");
+      btn.disabled = true;
+      btn.innerHTML = `<div class="spinner spinner-dark"></div> Connecting...`;
+
+      try {
+        await signInWithPopup(auth, provider);
+        window.location.href = "dashboard.html";
+      } catch (err) {
+        if (err.code !== "auth/popup-closed-by-user") {
+          showAlert(`Google sign-up failed: ${err.message}`);
+        }
+        btn.disabled = false;
+        btn.innerHTML = `
+          <svg class="google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+          </svg>
+          Sign up with Google`;
+      }
+    };
+
+    /* ── Email Register ── */
     window.handleRegister = async function () {
       clearAlert();
-      const displayName    = document.getElementById("displayName").value.trim();
-      const email          = document.getElementById("email").value.trim();
-      const password       = document.getElementById("password").value;
+      const displayName     = document.getElementById("displayName").value.trim();
+      const email           = document.getElementById("email").value.trim();
+      const password        = document.getElementById("password").value;
       const confirmPassword = document.getElementById("confirmPassword").value;
-      const btn            = document.getElementById("registerBtn");
+      const btn             = document.getElementById("registerBtn");
 
-      if (!displayName) return showAlert("⚠ Full name is required.");
-      if (!email)       return showAlert("⚠ Email address is required.");
-      if (password.length < 8) return showAlert("⚠ Password must be at least 8 characters.");
-      if (password !== confirmPassword) return showAlert("⚠ Passwords do not match.");
+      if (!displayName) return showAlert("Please enter your full name.");
+      if (!email)       return showAlert("Please enter your email address.");
+      if (password.length < 8) return showAlert("Password must be at least 8 characters.");
+      if (password !== confirmPassword) return showAlert("Passwords do not match.");
 
       btn.disabled = true;
-      btn.innerHTML = '<span class="spinner"></span> PROCESSING...';
+      btn.innerHTML = `<div class="spinner"></div> Creating account...`;
 
       try {
         const cred = await createUserWithEmailAndPassword(auth, email, password);
@@ -452,15 +414,15 @@
         await sendEmailVerification(cred.user);
         window.location.href = "verify-sent.html";
       } catch (err) {
-        const messages = {
-          "auth/email-already-in-use":    "⚠ An account with this email already exists.",
-          "auth/invalid-email":           "⚠ Invalid email address format.",
-          "auth/weak-password":           "⚠ Password is too weak.",
-          "auth/network-request-failed":  "⚠ Network error. Check your connection.",
+        const msgs = {
+          "auth/email-already-in-use": "An account with this email already exists.",
+          "auth/invalid-email":        "Please enter a valid email address.",
+          "auth/weak-password":        "Password is too weak. Please choose a stronger one.",
+          "auth/network-request-failed": "Network error. Please check your connection.",
         };
-        showAlert(messages[err.code] || `⚠ Error: ${err.message}`);
+        showAlert(msgs[err.code] || `Registration failed: ${err.message}`);
         btn.disabled = false;
-        btn.innerHTML = "REQUEST ACCESS";
+        btn.textContent = "Create Account";
       }
     };
   </script>
